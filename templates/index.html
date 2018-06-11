@@ -1,0 +1,379 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="static/favicon.ico">
+
+    <title>boya WIFI </title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="static/css/bootstrap-select.min.css">
+    <link type="text/css" href="static/css/style.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        body {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .video {
+            float: left;
+           
+		    width:100%;
+		    
+            background-color: #000000;
+            border: solid 1px #000000;
+            
+            max-width: 640px;
+            max-height: 480px;
+        }
+
+        .rotate {
+            -ms-transform: rotate(90deg);
+            /* IE 9 */
+            -moz-transform: rotate(90deg);
+            /* Firefox */
+            -webkit-transform: rotate(90deg);
+            /* Safari and Chrome */
+            -o-transform: rotate(90deg);
+            /* Opera */
+        }
+    </style>
+    <script type="text/javascript">
+    </script>
+
+</head>
+
+<body>
+    <div class="row" style="padding: 15px">
+        <div class="col-xs-5">
+        <img id="img1" style="padding:0px;" class="video">
+        </div>
+        <div class="col-xs-5">
+        <img id="img2" style="padding:0px;" class="video ">
+        </div>
+        <div class="col-xs-2" style="padding:10px;text-align:center">
+                <h5 id="ip"></h5>
+                <h3 id="h_name">name</h3>
+                <button type="button" class="btn btn-primary btn-block " disabled id="btn_up" style="height:100px;font-size:16px">
+                        <img src="/static/up.png" style="width:48px" />
+                    </button>
+                    <br />
+                    <button type="button" class="btn btn-primary  btn-block" disabled id="btn_down" style="height:100px;font-size:16px">
+                        <img src="/static/down.png" style="width:48px" />
+                    </button>
+
+                    <div >
+                            <button type="button" class="btn btn-primary hidden" id="btn_double">双摄</button>
+                            <button type="button" class="btn btn-primary hidden" id="btn_swap">切换</button>
+                
+                            <button type="button" class="btn btn-primary hidden" id="btn_mode">图片</button>
+                        </div>
+        </div>
+    </div>
+
+    <div style="z-index:998;position:fixed;padding:10px;left:0px;top:0px;width:100px;color:yellow ">
+       
+        <div id="div_name" class="hidden" style="width:100px;position:absolute;left:0px;top:0px; padding:10px;color:#000000">
+            <input id="dev_name" type="text" style="width:100px" />
+            <button id="btn_save" class="btn btn-primary" style="position:absolute;right:0px;top:5px;left:90px">
+                ok
+            </button>
+        </div>
+    </div>
+
+   
+
+    <div style="z-index: 998;position:absolute;bottom: 0px;height: 45px;left: 20px;widows: 100%;right: 20px;">
+
+       
+
+    </div>
+    <div>
+    </div>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/docs.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-select.min.js"></script>
+    <script type="text/javascript">
+        function browserRedirect() {
+            var sUserAgent = navigator.userAgent.toLowerCase();
+            var bIsIpad = sUserAgent.match(/ipad/i) == "ipad";
+            var bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";
+            var bIsMidp = sUserAgent.match(/midp/i) == "midp";
+            var bIsUc7 = sUserAgent.match(/rv:1.2.3.4/i) == "rv:1.2.3.4";
+            var bIsUc = sUserAgent.match(/ucweb/i) == "ucweb";
+            var bIsAndroid = sUserAgent.match(/android/i) == "android";
+            var bIsCE = sUserAgent.match(/windows ce/i) == "windows ce";
+            var bIsWM = sUserAgent.match(/windows mobile/i) == "windows mobile";
+            //document.writeln("您的浏览设备为：");
+            if (bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM) {
+                //document.writeln("phone");
+                return "phone";
+            } else {
+                //document.writeln("pc");
+                return "pc";
+            }
+        }
+        var post1 = {{post1}};
+        var post2 = {{post2}};
+	var upio={{upio}};
+	var downio={{downio}};
+        var cam2_type = "stream";
+        console.log(window.location.host);
+        var host = window.location.host;
+        host = host.substr(0, host.indexOf(":"));
+        console.log(host);
+        /* var ipp=host.split('.');
+        var ip_s=ipp[0]+"."+ipp[1]+"."+ipp[2];
+        console.log(ip_s);
+        for(var i=2;i<255;i++)
+        {
+            var _ip=ip_s+"."+i;
+            console.log(_ip);
+            $.get("http://"+_ip+":8011/init", "", function (data) {
+                var lia=data.name+"/"+_ip;     
+                $("#dev_list").append("<li>"+lia+"</li>");
+                //console.log(data);
+            }, "json");
+        } */
+        var img1 = document.getElementById("img1");
+        //var height = $(window).height();
+        //console.log(height);
+        //$("#img1").height(height - 20);
+        //$("#img2").height(height - 20);
+
+        //$("#img1").css('width', '50%');
+        //$("#img2").css('width', '50%');
+        //$("#img2").css("display", "");
+        $("#img1").attr("src", "http://" + host + ":" + post1 + "/?action=stream");
+        $("#img2").attr("src", "http://" + host + ":" + post2 + "/?action=" + cam2_type);
+
+
+
+        $(document).ready(function () {
+
+            var brow = browserRedirect();
+            console.log(brow);
+            if (brow == 'phone') {
+                $("#btn_up").on('touchstart', function () {
+                    $("#btn_up").removeClass("btn-primary");
+                    $("#btn_up").addClass("btn-warning");
+                    gpio(upio, 1)
+                });
+                $("#btn_up").on('touchend', function () {
+                    $("#btn_up").addClass("btn-primary");
+                    $("#btn_up").removeClass("btn-warning");
+                    gpio(upio, 0);
+                });
+
+                $("#btn_down").on('touchstart', function () {
+                    $("#btn_down").removeClass("btn-primary");
+                    $("#btn_down").addClass("btn-warning");
+                    gpio(downio, 1);
+                });
+                $("#btn_down").on('touchend', function () {
+                    $("#btn_down").addClass("btn-primary");
+                    $("#btn_down").removeClass("btn-warning");
+                    gpio(downio, 0);
+                });
+                $("#btn_save").on("touchstart", function () {
+
+                    save_name();
+                    $("#div_name").addClass("hidden");
+                });
+                $("#h_name").on("touchstart", function () {
+                    $("#div_name").removeClass("hidden");
+                });
+                $("#btn_set").on("touchstart", function () {
+                    show_set();
+                });
+                $("#btn_close").on("touchstart", function () {
+                    hide_set();
+                });
+                $("#btn_double").on('touchstart', function () {
+                    double_camer();
+                });
+                $("#btn_swap").on('touchstart', function () {
+                    swap();
+                });
+                $("#btn2").on('touchstart', function () {
+                    btn2_click();
+                });
+                $("#btn1").on('touchstart', function () {
+                    btn1_click();
+                });
+
+                $("#btn_mode").on('touchstart', function () {
+                    btn_mode();
+                });
+
+
+            } else {
+                $("#btn_up").mousedown(function () {
+                    $("#btn_up").removeClass("btn-primary");
+                    $("#btn_up").addClass("btn-warning");
+                    console.log("mousedown_"+upio+"_1");
+                    gpio(upio, 1);
+
+                });
+                $("#btn_up").mouseup(function () {
+                    $("#btn_up").addClass("btn-primary");
+                    $("#btn_up").removeClass("btn-warning");
+                    console.log("mouseup_"+upio+"_0");
+                    gpio(upio, 0);
+                });
+
+                $("#btn_down").mousedown(function () {
+                    $("#btn_down").addClass("btn-warning");
+                    $("#btn_down").removeClass("btn-primary");
+
+                    console.log("mousedown_"+downio+"_1");
+                    gpio(downio, 1);
+                });
+                $("#btn_down").mouseup(function () {
+                    $("#btn_down").addClass("btn-primary");
+                    $("#btn_down").removeClass("btn-warning");
+
+                    console.log("mouseup_"+downio+"_0");
+                    gpio(downio, 0);
+                });
+                $("#btn_save").click(function () {
+                    save_name();
+                    $("#div_name").addClass("hidden");
+                });
+
+                $("#h_name").click(function () {
+                    $("#div_name").removeClass("hidden");
+                });
+                $("#btn_set").click(function () {
+
+                    show_set();
+                });
+                $("#btn_close").click(function () {
+                    hide_set();
+                });
+
+                $("#btn_double").click(function () {
+                    double_camer();
+                });
+                $("#btn_swap").click(function () {
+                    swap();
+                });
+
+                $("#btn2").click(function () {
+                    btn2_click();
+                });
+                $("#btn1").click(function () {
+                    btn1_click();
+                });
+
+                $("#btn_mode").click(function () {
+                    btn_mode();
+                });
+
+
+            }
+            goio_init();
+        });
+
+
+
+        function goio_init() {
+            console.log("gpio_init");
+            $.get("/init", "", function (data) {
+                $("#h_name").html(data.name);
+                $("#btn_up").removeAttr("disabled");
+                $("#btn_down").removeAttr("disabled");
+                //st_time();
+            }, "json");
+        }
+
+        function gpio(io, n) {
+            var r = new Date().getTime();
+            var power = "on";
+            if (n == 0) power = "off"
+            $.get("/" + power + "/" + io + "?r=" + r, "", function (data) {
+                console.log(data);
+            }, "json");
+        }
+
+        var tt = -1;
+        function btn_mode() {
+            if (cam2_type == "snapshot") {
+                cam2_type = "stream"
+                $("#btn_mode").removeClass("btn-primary");
+                $("#btn_mode").addClass("btn-success");
+                $("#btn_mode").html("视频");
+                $("#div_setimg").addClass("hidden");
+	window.clearInterval(tt);
+
+            } else {
+                cam2_type = "snapshot"
+                $("#btn_mode").html("图片");
+                $("#btn_mode").addClass("btn-primary");
+                $("#btn_mode").removeClass("btn-success");
+                $("#div_setimg").removeClass("hidden");
+	        st_time();
+
+            }
+            console.log(cam2_type);
+            $("#img2").attr("src", "http://" + host + ":" + post2 + "/?action=" + cam2_type);
+        }
+        function st_time()
+        {
+                tt = setInterval(function () {
+                    timestamp = timestamp = Date.parse(new Date());
+                    $("#img2").attr("src", "http://" + host + ":" + post2 + "/?action=snapshot&t=" + timestamp);
+                }, 1000);
+        }		
+      
+
+        function double_camer() {
+            if ($("#btn_double").html() == "双摄") {
+                $("#img1").css('width', '50%');
+                $("#img2").css('width', '50%');
+                $("#img2").css("display", "");
+                $("#img1").attr("src", "http://" + host + ":" + post1 + "/?action=stream");
+                $("#img2").attr("src", "http://" + host + ":" + post2 + "/?action=stream");
+                $("#btn_double").html("单摄");
+            } else {
+                $("#img1").css('width', '100%');
+                $("#img2").css('width', '50%');
+                $("#img2").css("display", "none");
+                $("#img2").attr("src", "");
+                $("#btn_double").html("双摄");
+            }
+
+        }
+
+        function swap() {
+            var src = $("#img1").attr("src");
+            if (src.indexOf(post1) > 0) {
+                src = src.replace(post1, post2);
+            } else {
+                src = src.replace(post2, post1);
+            }
+            img1.src = src;
+        }
+    </script>
+</body>
+
+
+
+</html>
